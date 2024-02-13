@@ -1,4 +1,4 @@
-package com.example.myapplication.view.main.data
+package com.example.myapplication.data
 
 data class Book(
     val title: String,

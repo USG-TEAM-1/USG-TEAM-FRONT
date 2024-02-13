@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.view.main.data.dummyData
+import com.example.myapplication.data.dummyData
 
 object BookListComponent {
     @Composable
@@ -36,7 +36,7 @@ object BookListComponent {
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        itemsIndexed(dummyData) {index, book ->
+        itemsIndexed(dummyData) { index, book ->
             Column {
                 Row {
                     BookImage()
