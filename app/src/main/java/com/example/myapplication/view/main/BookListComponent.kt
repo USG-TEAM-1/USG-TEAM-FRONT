@@ -46,10 +46,10 @@ object BookListComponent {
                             .padding(22.dp),
                         verticalArrangement = spacedBy(8.dp)
                     ) {
-                        Text(text = book.postTitle)
-                        Text(text = book.title)
-                        Text(text = book.salePrice + " / " + book.originalPrice)
-                        Text(text = book.publisher + ", " + book.author)
+                        ContentText(text = book.postTitle)
+                        ContentText(text = book.title)
+                        ContentText(text = book.salePrice + " / " + book.originalPrice)
+                        ContentText(text = book.publisher + ", " + book.author)
                     }
                 }
                 Divider(
