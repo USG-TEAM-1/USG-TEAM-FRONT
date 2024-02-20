@@ -1,5 +1,6 @@
 package com.example.myapplication.view.auth
 
+import android.app.AlertDialog
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
 import com.example.myapplication.api.ApiService
 import com.example.myapplication.api.EmailCheckRequest
@@ -150,7 +152,7 @@ object JoinPageFragment{
                 onClick = {
                     // 회원가입 버튼 클릭 시
                     if (isEmailChecked && isNicknameChecked && passwordsMatch) {
-                        join(email, nickname, password, context)
+                        join(email, nickname, password, context, navController)
                     }
                 },
                 enabled = isEmailChecked && isNicknameChecked && passwordsMatch, // 버튼 활성화 여부
@@ -164,7 +166,7 @@ object JoinPageFragment{
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            // 회원가입 버튼 클릭 시 JoinPageFragment로 이동
+            // 로그인 버튼 클릭 시 LoginPageFragment로 이동
             Button(
                 onClick = {
                     navController.navigate("login") // 또는 다른 방법을 사용하여 목적지로 이동
@@ -185,7 +187,7 @@ object JoinPageFragment{
         return retrofit.create(ApiService::class.java)
     }
 
-    private fun join(email: String, nickname: String, password: String, context: Context) {
+    private fun join(email: String, nickname: String, password: String, context: Context, navController: NavController) {
         val apiService = initializeApiService(context)
         Log.d("log", "join api start")
         val joinRequest = JoinRequest(email, nickname, password)
@@ -196,6 +198,7 @@ object JoinPageFragment{
                     // 회원가입 성공 처리
                     Log.d("log", "join success")
                     // 여기에 회원가입 성공 시 필요한 로직을 추가하세요
+                    navController.navigate("login") // 또는 다른 방법을 사용하여 목적지로 이동
                 } else {
                     // 회원가입 실패 처리
                     Log.d("log", "join failed")
@@ -220,8 +223,12 @@ object JoinPageFragment{
                     val isEmailAvailable = emailCheckResponse?.isAvailable ?: false
                     if (isEmailAvailable) {
                         onSuccess() // 이메일 사용 가능할 때 처리
+                        Log.d("가능 여부", "가능")
+                        showAlert(context, "이메일 중복 여부 알림", "해당 이메일 사용 가능 합니다!")
                     } else {
                         onFailure() // 이메일이 이미 사용 중일 때 처리
+                        Log.d("가능 여부", "불가능")
+                        showAlert(context, "이메일 중복 여부 알림", "해당 이메일 사용 불가 합니다!")
                     }
                 } else {
                     onFailure() // 서버 오류 등으로 확인 실패 시 처리
@@ -230,6 +237,7 @@ object JoinPageFragment{
 
             override fun onFailure(call: Call<EmailCheckResponse>, t: Throwable) {
                 onFailure() // 네트워크 오류 등으로 확인 실패 시 처리
+                showAlert(context, "서버 오류 알림", "죄송합니다! 잠시 후 다시 시도해주세요.")
             }
         })
     }
@@ -245,8 +253,10 @@ object JoinPageFragment{
                     val isNicknameAvailable = nicknameCheckResponse?.isAvailable ?: false
                     if (isNicknameAvailable) {
                         onSuccess() // 별명 사용 가능할 때 처리
+                        showAlert(context, "닉네임 중복 여부 알림", "해당 닉네임 사용 가능 합니다!")
                     } else {
                         onFailure() // 별명이 이미 사용 중일 때 처리
+                        showAlert(context, "닉네임 중복 여부 알림", "해당 닉네임 사용 불가 합니다!")
                     }
                 } else {
                     onFailure() // 서버 오류 등으로 확인 실패 시 처리
@@ -255,7 +265,18 @@ object JoinPageFragment{
 
             override fun onFailure(call: Call<NicknameCheckResponse>, t: Throwable) {
                 onFailure() // 네트워크 오류 등으로 확인 실패 시 처리
+                showAlert(context, "서버 오류 알림", "죄송합니다! 잠시 후 다시 시도해주세요.")
             }
         })
+    }
+
+    // 중복 사용 알림창을 생성하는 함수
+    private fun showAlert(context: Context, title: String, message: String) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(title)
+        builder.setMessage(message)
+        builder.setPositiveButton("확인", null)
+        val dialog = builder.create()
+        dialog.show()
     }
 }
