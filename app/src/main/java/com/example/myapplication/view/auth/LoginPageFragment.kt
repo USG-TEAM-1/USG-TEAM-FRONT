@@ -33,6 +33,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object LoginPageFragment {
+
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     @Composable
     fun view(navController: NavController) {
@@ -45,7 +46,7 @@ object LoginPageFragment {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
 
-
+        Log.d("login", "start")
         Column(
             modifier = Modifier.padding(16.dp)
         ) {

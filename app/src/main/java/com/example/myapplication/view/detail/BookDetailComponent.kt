@@ -17,12 +17,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.data.dummyData
+import com.example.myapplication.data.BookItem
 import com.example.myapplication.view.component.IconButtonComponent.IconButton
 
 object BookDetailComponent {
+
     @Composable
-    fun view() = Column {
+    fun view(bookItem: BookItem) = Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -32,12 +33,12 @@ object BookDetailComponent {
             MenuButton()
         }
         UserComponent()
-        
+
     }
 
     @Composable
     private fun PostTitleText() = Text(
-        text = dummyData[0].postTitle,
+        text = "dummyData[0].postTitle",
         fontSize = 30.sp
     )
 
@@ -60,7 +61,6 @@ object BookDetailComponent {
             .padding(horizontal = 20.dp)
     ) {
         UserImage()
-        UserNicknameText()
     }
 
     @Composable
@@ -72,34 +72,5 @@ object BookDetailComponent {
             .height(48.dp)
     )
 
-    @Composable
-    private fun UserNicknameText() = Text(
-        text = dummyData[0].memberNickname,
-        fontSize = 20.sp
-    )
 
-    @Composable
-    private fun BookTitleText() = Text(
-        text = dummyData[0].title,
-        fontSize = 25.sp
-    )
-
-    @Composable
-    private fun SalePriceText() = Text(
-        text = dummyData[0].salePrice,
-        fontSize = 25.sp
-    )
-
-    @Composable
-    private fun OriginalPriceText() = Text(
-        text = dummyData[0].originalPrice,
-        fontSize = 20.sp,
-        color = Color.Gray
-    )
-
-    @Composable
-    private fun ContentText() = Text(
-        text = dummyData[0].originalPrice,
-        fontSize = 20.sp
-    )
 }
