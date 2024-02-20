@@ -16,6 +16,9 @@ import com.example.myapplication.view.auth.LoginPageFragment
 import com.example.myapplication.view.auth.JoinPageFragment
 import com.example.myapplication.view.auth.TokenManager
 import com.example.myapplication.view.main.MainPageFragment
+import com.example.myapplication.view.register.RegisterInfoInputForIsbn
+import com.example.myapplication.view.register.RegisterInfoInputForManually
+import com.example.myapplication.view.register.SelectInfoInputFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +47,16 @@ fun MainContent() {
                 JoinPageFragment.view(navController)
             }
             composable("main") {
-                MainPageFragment.view()
+                MainPageFragment.view(navController)
+            }
+            composable("selectInfoInput") {
+                SelectInfoInputFragment.view(navController)
+            }
+            composable("registerInfoInputForIsbn") {
+                RegisterInfoInputForIsbn.view(navController)
+            }
+            composable("registerInfoInputForManually") {
+                RegisterInfoInputForManually.view(navController)
             }
         }
     }

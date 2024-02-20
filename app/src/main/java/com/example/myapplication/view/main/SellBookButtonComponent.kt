@@ -12,11 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 object SellBookButtonComponent {
     @Composable
-    fun SellBookButton(modifier: Modifier) = Button(
-        onClick = { /*TODO*/ },
+    fun SellBookButton(modifier: Modifier, navController: NavController) = Button(
+        onClick = { navController.navigate("selectInfoInput") },
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Gray

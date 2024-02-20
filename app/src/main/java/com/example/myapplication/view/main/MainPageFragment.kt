@@ -9,10 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 object MainPageFragment{
     @Composable
-    fun view() {
+    fun view(navController: NavController) {
         Box {
             Column {
                 TopSectionComponent.view()
@@ -20,9 +21,10 @@ object MainPageFragment{
             }
             SellBookButtonComponent.SellBookButton(
                 modifier = Modifier
-                .width(137.dp)
-                .height(56.dp)
-                .align(Alignment.BottomEnd),
+                    .width(137.dp)
+                    .height(56.dp)
+                    .align(Alignment.BottomEnd),
+                navController
             )
         }
     }

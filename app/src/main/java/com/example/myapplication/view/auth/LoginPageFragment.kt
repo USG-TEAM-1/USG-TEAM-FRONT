@@ -46,7 +46,6 @@ object LoginPageFragment {
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
 
-        Log.d("login", "start")
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
