@@ -13,12 +13,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
+import com.example.myapplication.api.book.RetrofitIsbnObj.bookApi
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.myapplication.BuildConfig
+import com.example.myapplication.MainViewModel
+import com.example.myapplication.data.BookItemIsbn
+import kotlinx.coroutines.launch
+
 
 object RegisterInfoInputForIsbn {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun view(navController: NavHostController) {
+    fun view(navController: NavHostController, mainViewModel: MainViewModel) {
         var isbn by remember { mutableStateOf(TextFieldValue("")) }
+        val coroutineScope = rememberCoroutineScope()
+
         Column {
             Text("책 정보 등록")
             Row {
@@ -29,9 +38,34 @@ object RegisterInfoInputForIsbn {
                     singleLine = true,
                 )
             }
-            Button(onClick = {  }) {
+            Button(onClick = {
+                coroutineScope.launch {
+                    val bookItemIsbn = getInfoForIsbn(isbn.text)
+                    if (bookItemIsbn != null) {
+                        // BookItemIsbn 객체를 ViewModel의 bookItemIsbn 속성에 저장합니다.
+                        mainViewModel.bookItemIsbn.value = bookItemIsbn
+                        mainViewModel.isbnCode = isbn.text
+                        navController.navigate("registerInfoInputDetail")
+                    }
+                }
+            }) {
                 Text("확인")
             }
         }
     }
+
+    private suspend fun getInfoForIsbn(isbnCode: String): BookItemIsbn? {
+        val key = BuildConfig.API_KEY
+
+        return try {
+            val response = bookApi.getBookIsbn(key, true, "isbn", isbnCode)
+            val bookItems = response.result.bookItems
+            bookItems.firstOrNull()
+        } catch (e: Exception) {
+            println("API 요청 중 오류 발생: ${e.message}")
+            null
+        }
+    }
+
+
 }

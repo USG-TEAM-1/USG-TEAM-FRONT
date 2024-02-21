@@ -9,13 +9,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.myapplication.data.BookItemIsbn
 import com.example.myapplication.view.auth.LoginPageFragment
 import com.example.myapplication.view.auth.JoinPageFragment
 import com.example.myapplication.view.auth.TokenManager
 import com.example.myapplication.view.main.MainPageFragment
+import com.example.myapplication.view.register.RegisterInfoInputDetail
 import com.example.myapplication.view.register.RegisterInfoInputForIsbn
 import com.example.myapplication.view.register.RegisterInfoInputForManually
 import com.example.myapplication.view.register.SelectInfoInputFragment
@@ -31,12 +36,19 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+class MainViewModel() : ViewModel() {
+    val bookItemIsbn = MutableLiveData<BookItemIsbn>()
+    var isbnCode: String = ""
+}
+
 @Composable
 fun MainContent() {
     val navController = rememberNavController()
     val context = LocalContext.current
     TokenManager.initialize(context)
     val token = remember { TokenManager.getToken() }
+
+    val mainViewModel: MainViewModel = viewModel()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = if (token != null) "main" else "login") {
@@ -53,10 +65,15 @@ fun MainContent() {
                 SelectInfoInputFragment.view(navController)
             }
             composable("registerInfoInputForIsbn") {
-                RegisterInfoInputForIsbn.view(navController)
+                RegisterInfoInputForIsbn.view(navController, mainViewModel)
             }
             composable("registerInfoInputForManually") {
-                RegisterInfoInputForManually.view(navController)
+                RegisterInfoInputForManually.view(navController, mainViewModel)
+            }
+            composable("registerInfoInputDetail") {
+                mainViewModel.bookItemIsbn.value?.let { bookItemIsbn ->
+                    RegisterInfoInputDetail.view(mainViewModel.isbnCode, bookItemIsbn, navController)
+                }
             }
         }
     }

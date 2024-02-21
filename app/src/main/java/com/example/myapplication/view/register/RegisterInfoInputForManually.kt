@@ -13,18 +13,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
+import com.example.myapplication.MainViewModel
+import com.example.myapplication.data.BookItemIsbn
 
 object RegisterInfoInputForManually {
     @Composable
-    fun view(navController: NavController) {
+    fun view(navController: NavController, mainViewModel: MainViewModel) {
+        var bookTitle by remember { mutableStateOf(TextFieldValue("")) }
+        var originalPrice by remember { mutableStateOf(TextFieldValue("")) }
+        var author by remember { mutableStateOf(TextFieldValue("")) }
+        var publisher by remember { mutableStateOf(TextFieldValue("")) }
+
         Column {
             Text(text = "책 정보 등록")
-            EditText(column = "책 제목")
-            EditText(column = "원가")
-            EditText(column = "저자")
-            EditText(column = "출판사")
+            EditText(column = "책 제목", text = bookTitle, onTextChange = { bookTitle = it })
+            EditText(column = "원가", text = originalPrice, onTextChange = { originalPrice = it })
+            EditText(column = "저자", text = author, onTextChange = { author = it })
+            EditText(column = "출판사", text = publisher, onTextChange = { publisher = it })
 
-            Button(onClick = {  }) {
+            Button(onClick = {
+                // EditText에서 받은 값을 BookItemIsbn에 담습니다.
+                mainViewModel.bookItemIsbn.value = BookItemIsbn(bookTitle.text, author.text, publisher.text)
+                navController.navigate("registerInfoInputDetail")
+            }) {
                 Text("확인")
             }
         }
@@ -32,13 +43,12 @@ object RegisterInfoInputForManually {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun EditText(column: String) {
-        var text by remember { mutableStateOf(TextFieldValue("")) }
+    private fun EditText(column: String, text: TextFieldValue, onTextChange: (TextFieldValue) -> Unit) {
         Row {
             Text(column)
             TextField(
                 value = text,
-                onValueChange = { newText -> text = newText },
+                onValueChange = onTextChange,
                 singleLine = true,
             )
         }
