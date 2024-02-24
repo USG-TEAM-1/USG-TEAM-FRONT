@@ -19,6 +19,7 @@ import com.example.myapplication.data.BookItemIsbn
 import com.example.myapplication.view.auth.LoginPageFragment
 import com.example.myapplication.view.auth.JoinPageFragment
 import com.example.myapplication.view.auth.TokenManager
+import com.example.myapplication.view.detail.DetailPageFragment
 import com.example.myapplication.view.main.MainPageFragment
 import com.example.myapplication.view.register.RegisterInfoInputDetail
 import com.example.myapplication.view.register.RegisterInfoInputForIsbn

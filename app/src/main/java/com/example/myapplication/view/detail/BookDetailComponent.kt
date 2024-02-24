@@ -11,11 +11,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.data.BookItem
 import com.example.myapplication.view.component.IconButtonComponent.IconButton
@@ -23,22 +27,45 @@ import com.example.myapplication.view.component.IconButtonComponent.IconButton
 object BookDetailComponent {
 
     @Composable
-    fun view(bookItem: BookItem) = Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            PostTitleText()
-            MenuButton()
+    fun view(bookItem: BookItem) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                PostTitleText(bookItem.bookPostName)
+                MenuButton()
+            }
+            bookItem.nickname?.let { text(text = it) }
+
+            Row {
+                bookItem.imageUrls.forEach { imageUrl ->
+                    BookImage(imageUrl)
+                }
+            }
+            
+            text(bookItem.bookName)
+            Row{
+                text(text = bookItem.bookPrice.toString())
+                text(bookItem.bookRealPrice.toString())
+            }
+            Row{
+                text(text = "저자")
+                text(bookItem.author)
+            }
+            Row{
+                text(text = "출판사")
+                text(bookItem.publisher)
+            }
+            text(text = bookItem.bookComment)
         }
-        UserComponent()
 
     }
 
     @Composable
-    private fun PostTitleText() = Text(
-        text = "dummyData[0].postTitle",
+    private fun PostTitleText(text: String) = Text(
+        text = text,
         fontSize = 30.sp
     )
 
@@ -55,22 +82,22 @@ object BookDetailComponent {
     }
 
     @Composable
-    private fun UserComponent() = Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-    ) {
-        UserImage()
-    }
-
-    @Composable
-    private fun UserImage() = Image(
-        painter = painterResource(id = R.drawable.ic_main_mypage),
-        contentDescription = "이미지 설명",
-        modifier = Modifier
-            .width(48.dp)
-            .height(48.dp)
+    private fun text(text: String) = Text(
+        text = text,
+        fontSize = 30.sp
     )
 
+    @Composable
+    private fun BookImage(imageUrl: String) {
+        val painter = rememberImagePainter(imageUrl)
 
+        Image(
+            painter = painter,
+            contentDescription = "이미지 설명",
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp),
+            contentScale = ContentScale.Crop
+        )
+    }
 }

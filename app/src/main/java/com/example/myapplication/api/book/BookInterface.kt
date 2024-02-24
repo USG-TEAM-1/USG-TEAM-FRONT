@@ -1,5 +1,6 @@
 package com.example.myapplication.api.book
 
+import com.example.myapplication.data.BookDetailResponse
 import com.example.myapplication.data.BookItem
 import com.example.myapplication.data.Root
 import retrofit2.Call
@@ -27,5 +28,5 @@ interface BookInterface {
     @GET("api/book/{bookId}")
     fun getBookItem(
         @Path("bookId") bookId: Int
-    ): Call<BookItem>
+    ): Call<BookDetailResponse>
 }

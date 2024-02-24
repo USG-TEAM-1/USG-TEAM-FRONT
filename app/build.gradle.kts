@@ -90,5 +90,6 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.1")
     implementation("com.squareup.retrofit2:converter-simplexml:2.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
 }

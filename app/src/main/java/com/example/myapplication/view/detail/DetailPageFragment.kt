@@ -14,14 +14,14 @@ import androidx.compose.runtime.livedata.observeAsState
 object DetailPageFragment {
 
     @Composable
-    fun view() = Column(
+    fun view(viewModel: BookDetailViewModel = BookDetailViewModel(1)) = Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
 
     ) {
         TopNavigationComponent.view()
-        BookDetailScreen(viewModel = BookDetailViewModel(1))
+        BookDetailScreen(viewModel)
     }
 
     @Composable
@@ -29,7 +29,8 @@ object DetailPageFragment {
         val bookItem by viewModel.bookDetail.observeAsState()
 
         bookItem?.let {
-            BookDetailComponent.view(it)
+
+            BookDetailComponent.view(it.data)
         }
     }
 }
