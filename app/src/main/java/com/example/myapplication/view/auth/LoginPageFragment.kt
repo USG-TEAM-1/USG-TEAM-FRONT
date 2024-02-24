@@ -33,6 +33,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object LoginPageFragment {
+
     @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
     @Composable
     fun view(navController: NavController) {
@@ -44,7 +45,6 @@ object LoginPageFragment {
         // 입력된 이메일과 비밀번호를 저장할 변수
         var email by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
-
 
         Column(
             modifier = Modifier.padding(16.dp)

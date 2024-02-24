@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.data.dummyData
 
 object BookListComponent {
     @Composable
@@ -36,28 +35,28 @@ object BookListComponent {
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        itemsIndexed(dummyData) { index, book ->
-            Column {
-                Row {
-                    BookImage()
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(22.dp),
-                        verticalArrangement = spacedBy(8.dp)
-                    ) {
-                        Text(text = book.postTitle)
-                        Text(text = book.title)
-                        Text(text = book.salePrice + " / " + book.originalPrice)
-                        Text(text = book.publisher + ", " + book.author)
-                    }
-                }
-                Divider(
-                    modifier = Modifier.padding(top = 30.dp, bottom = 30.dp, start = 20.dp, end = 20.dp),
-                    color = Color.Black
-                )
-            }
-        }
+//        itemsIndexed(dummyData) { index, book ->
+//            Column {
+//                Row {
+//                    BookImage()
+//                    Column(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(22.dp),
+//                        verticalArrangement = spacedBy(8.dp)
+//                    ) {
+//                        ContentText(text = book.postTitle)
+//                        ContentText(text = book.title)
+//                        ContentText(text = book.salePrice + " / " + book.originalPrice)
+//                        ContentText(text = book.publisher + ", " + book.author)
+//                    }
+//                }
+//                Divider(
+//                    modifier = Modifier.padding(top = 30.dp, bottom = 30.dp, start = 20.dp, end = 20.dp),
+//                    color = Color.Black
+//                )
+//            }
+//        }
     }
 
     @Composable

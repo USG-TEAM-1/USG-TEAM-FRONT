@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
+import com.example.myapplication.view.component.IconButtonComponent.IconButton
 
 object TopSectionComponent {
     @Composable
@@ -62,24 +63,5 @@ object TopSectionComponent {
             tint = Color.Unspecified, // 로고 색 표현
             contentDescription = "마이페이지 버튼"
         )
-    }
-
-    @Composable
-    private fun IconButton(
-        onClick: () -> Unit,
-        modifier: Modifier = Modifier,
-        enabled: Boolean = true,
-        interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-        content: @Composable () -> Unit
-    ) {
-//        val combinedModifier = Modifier
-//            .clickable(
-//                enabled = enabled,
-//                interactionSource = interactionSource,
-//                indication = null,
-//                onClick = onClick
-//            )
-//            .then(modifier)
-        content()
     }
 }
