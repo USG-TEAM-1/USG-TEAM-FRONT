@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,13 @@ object BookDetailComponent {
                 PostTitleText(bookItem.bookPostName)
                 MenuButton()
             }
-            bookItem.nickname?.let { text(text = it) }
+            Row {
+                bookItem.nickname?.let { text(text = it) }
+                Button(onClick = { /*TODO*/ }) {
+                    Text("챗톡")
+                }
+            }
+
 
             Row {
                 bookItem.imageUrls.forEach { imageUrl ->
@@ -48,7 +55,7 @@ object BookDetailComponent {
             text(bookItem.bookName)
             Row{
                 text(text = bookItem.bookPrice.toString())
-                text(bookItem.bookRealPrice.toString())
+                Text(text = bookItem.bookRealPrice.toString(), color = Color.Gray)
             }
             Row{
                 text(text = "저자")

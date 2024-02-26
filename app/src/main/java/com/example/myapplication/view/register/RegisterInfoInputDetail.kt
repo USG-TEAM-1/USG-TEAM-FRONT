@@ -1,5 +1,6 @@
 package com.example.myapplication.view.register
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,25 +15,59 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.NavController
 import com.example.myapplication.data.BookItemIsbn
+import android.net.Uri
+import okhttp3.MultipartBody
+import java.io.File
+
 
 object RegisterInfoInputDetail {
+
+
     @Composable
     fun view(isbnCode: String, bookItemIsbn: BookItemIsbn, navController: NavController) {
+        val PICK_IMAGES_REQUEST_CODE = 1
+        var imageUris by remember { mutableStateOf(listOf<Uri>()) }
+
         Log.d("detail",isbnCode)
         Column {
             InfoForIsbnComponent(bookItemIsbn)
             Divider()
             TitleTextField()
-//        todo : image
+            Button(onClick = { /*pickImages()*/ }) {
+                Text("이미지 선택")
+            }
             InfoDetailLine(title = "판매가")
             InfoDetailLine(title = "상세정보")
-            Button(onClick = {  }) {
+            Button(onClick = { /*uploadImages()*/ }) {
                 Text("확인")
             }
         }
     }
+
+//    fun uploadImages() {
+//        val imageFiles = ArrayList<MultipartBody.Part>()
+//        for ((index, uri) in imageUris.withIndex()) {
+//            val file = File(getRealPathFromUri(uri))
+//            val requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file)
+//            val body = MultipartBody.Part.createFormData("images[$index]", file.name, requestFile)
+//            imageFiles.add(body)
+//        }
+//
+//        val service = retrofit.create(ApiService::class.java)
+//        val call = service.uploadBook(bookName, bookComment, bookPostName, bookPrice, isbn, bookRealPrice, author, publisher, imageFiles)
+//        call.enqueue(object : Callback<ResponseBody> {
+//            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+//                // 업로드 성공 처리
+//            }
+//
+//            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//                // 업로드 실패 처리
+//            }
+//        })
+//    }
 
     @Composable
     private fun InfoForIsbnComponent(bookItemIsbn: BookItemIsbn) = Column {
