@@ -92,4 +92,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    //webSocket
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    implementation("org.java-websocket:Java-WebSocket:1.3.0")
+
 }
