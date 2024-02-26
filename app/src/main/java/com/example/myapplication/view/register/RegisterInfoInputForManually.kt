@@ -13,12 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
-import com.example.myapplication.MainViewModel
+import com.example.myapplication.RegisterViewModel
 import com.example.myapplication.data.BookItemIsbn
 
 object RegisterInfoInputForManually {
     @Composable
-    fun view(navController: NavController, mainViewModel: MainViewModel) {
+    fun view(navController: NavController, registerViewModel: RegisterViewModel) {
         var bookTitle by remember { mutableStateOf(TextFieldValue("")) }
         var originalPrice by remember { mutableStateOf(TextFieldValue("")) }
         var author by remember { mutableStateOf(TextFieldValue("")) }
@@ -33,7 +33,7 @@ object RegisterInfoInputForManually {
 
             Button(onClick = {
                 // EditText에서 받은 값을 BookItemIsbn에 담습니다.
-                mainViewModel.bookItemIsbn.value = BookItemIsbn(bookTitle.text, author.text, publisher.text)
+                registerViewModel.bookItemIsbn.value = BookItemIsbn(bookTitle.text, author.text, publisher.text)
                 navController.navigate("registerInfoInputDetail")
             }) {
                 Text("확인")

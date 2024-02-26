@@ -16,7 +16,7 @@ import androidx.navigation.NavHostController
 import com.example.myapplication.api.book.RetrofitIsbnObj.bookApi
 import androidx.compose.runtime.rememberCoroutineScope
 import com.example.myapplication.BuildConfig
-import com.example.myapplication.MainViewModel
+import com.example.myapplication.RegisterViewModel
 import com.example.myapplication.data.BookItemIsbn
 import kotlinx.coroutines.launch
 
@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 object RegisterInfoInputForIsbn {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun view(navController: NavHostController, mainViewModel: MainViewModel) {
+    fun view(navController: NavHostController, registerViewModel: RegisterViewModel) {
         var isbn by remember { mutableStateOf(TextFieldValue("")) }
         val coroutineScope = rememberCoroutineScope()
 
@@ -43,8 +43,8 @@ object RegisterInfoInputForIsbn {
                     val bookItemIsbn = getInfoForIsbn(isbn.text)
                     if (bookItemIsbn != null) {
                         // BookItemIsbn 객체를 ViewModel의 bookItemIsbn 속성에 저장합니다.
-                        mainViewModel.bookItemIsbn.value = bookItemIsbn
-                        mainViewModel.isbnCode = isbn.text
+                        registerViewModel.bookItemIsbn.value = bookItemIsbn
+                        registerViewModel.isbnCode = isbn.text
                         navController.navigate("registerInfoInputDetail")
                     }
                 }

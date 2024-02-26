@@ -19,7 +19,6 @@ import com.example.myapplication.data.BookItemIsbn
 import com.example.myapplication.view.auth.LoginPageFragment
 import com.example.myapplication.view.auth.JoinPageFragment
 import com.example.myapplication.view.auth.TokenManager
-import com.example.myapplication.view.detail.DetailPageFragment
 import com.example.myapplication.view.main.MainPageFragment
 import com.example.myapplication.view.register.RegisterInfoInputDetail
 import com.example.myapplication.view.register.RegisterInfoInputForIsbn
@@ -37,9 +36,12 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-class MainViewModel() : ViewModel() {
+class RegisterViewModel() : ViewModel() {
     val bookItemIsbn = MutableLiveData<BookItemIsbn>()
     var isbnCode: String = ""
+}
+class ChatTalkViewModel() : ViewModel() {
+    var nickname: String = ""
 }
 
 @Composable
@@ -49,7 +51,8 @@ fun MainContent() {
     TokenManager.initialize(context)
     val token = remember { TokenManager.getToken() }
 
-    val mainViewModel: MainViewModel = viewModel()
+    val registerViewModel: RegisterViewModel = viewModel()
+    val chatTalkViewModel: ChatTalkViewModel = viewModel()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = if (token != null) "main" else "login") {
@@ -66,14 +69,19 @@ fun MainContent() {
                 SelectInfoInputFragment.view(navController)
             }
             composable("registerInfoInputForIsbn") {
-                RegisterInfoInputForIsbn.view(navController, mainViewModel)
+                RegisterInfoInputForIsbn.view(navController, registerViewModel)
             }
             composable("registerInfoInputForManually") {
-                RegisterInfoInputForManually.view(navController, mainViewModel)
+                RegisterInfoInputForManually.view(navController, registerViewModel)
             }
             composable("registerInfoInputDetail") {
-                mainViewModel.bookItemIsbn.value?.let { bookItemIsbn ->
-                    RegisterInfoInputDetail.view(mainViewModel.isbnCode, bookItemIsbn, navController)
+                registerViewModel.bookItemIsbn.value?.let { bookItemIsbn ->
+                    RegisterInfoInputDetail.view(registerViewModel.isbnCode, bookItemIsbn, navController)
+                }
+            }
+            composable("personalChatTalk") {
+                chatTalkViewModel.nickname?.let { bookItemIsbn ->
+//                    ChatTalkPage.view(chatTalkViewModel.nickname)
                 }
             }
         }
