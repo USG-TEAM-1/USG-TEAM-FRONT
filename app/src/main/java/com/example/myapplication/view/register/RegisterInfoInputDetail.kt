@@ -1,7 +1,5 @@
 package com.example.myapplication.view.register
 
-import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
@@ -15,59 +13,77 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.navigation.NavController
 import com.example.myapplication.data.BookItemIsbn
 import android.net.Uri
-import okhttp3.MultipartBody
-import java.io.File
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.rememberImagePainter
+import com.example.myapplication.api.book.BookApi
 
 
 object RegisterInfoInputDetail {
-
+    val bookApi = BookApi()
 
     @Composable
     fun view(isbnCode: String, bookItemIsbn: BookItemIsbn, navController: NavController) {
-        val PICK_IMAGES_REQUEST_CODE = 1
-        var imageUris by remember { mutableStateOf(listOf<Uri>()) }
 
-        Log.d("detail",isbnCode)
+        var bookComment by remember { mutableStateOf(TextFieldValue("")) }
+        var bookPostName by remember { mutableStateOf(TextFieldValue("")) }
+        var bookPrice by remember { mutableStateOf(TextFieldValue("")) }
+        var imageUrisState by remember { mutableStateOf(listOf<Uri>()) }
+
         Column {
             InfoForIsbnComponent(bookItemIsbn)
             Divider()
-            TitleTextField()
-            Button(onClick = { /*pickImages()*/ }) {
-                Text("이미지 선택")
+            TitleTextField(text = bookPostName, onTextChange = { bookPostName = it })
+            GalleryMultipleImagePicker(imageUrisState = imageUrisState) { uris ->
+                imageUrisState = uris
             }
-            InfoDetailLine(title = "판매가")
-            InfoDetailLine(title = "상세정보")
-            Button(onClick = { /*uploadImages()*/ }) {
+
+            InfoDetailLine(column = "판매가", text = bookPrice, onTextChange = { bookPrice = it })
+            InfoDetailLine(column = "상세정보", text = bookComment, onTextChange = { bookComment = it })
+            Button(onClick = {
+                bookApi.registerBook(
+                    bookName = bookItemIsbn.bookName,
+                    bookComment = bookComment.text,
+                    author = bookItemIsbn.author,
+                    bookPostName = bookPostName.text,
+                    bookPrice = bookPrice.text.toInt(),
+                    isbn = isbnCode,
+                    bookRealPrice = 100000000,
+                    publisher = bookItemIsbn.publisher,
+                    imageUris = imageUrisState
+                )
+            }) {
                 Text("확인")
             }
         }
     }
 
-//    fun uploadImages() {
-//        val imageFiles = ArrayList<MultipartBody.Part>()
-//        for ((index, uri) in imageUris.withIndex()) {
-//            val file = File(getRealPathFromUri(uri))
-//            val requestFile = RequestBody.create(MediaType.parse("image/jpeg"), file)
-//            val body = MultipartBody.Part.createFormData("images[$index]", file.name, requestFile)
-//            imageFiles.add(body)
-//        }
-//
-//        val service = retrofit.create(ApiService::class.java)
-//        val call = service.uploadBook(bookName, bookComment, bookPostName, bookPrice, isbn, bookRealPrice, author, publisher, imageFiles)
-//        call.enqueue(object : Callback<ResponseBody> {
-//            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-//                // 업로드 성공 처리
-//            }
-//
-//            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                // 업로드 실패 처리
-//            }
-//        })
-//    }
+    @Composable
+    fun GalleryMultipleImagePicker(imageUrisState: List<Uri>, onUrisSelected: (List<Uri>) -> Unit) {
+
+        val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetMultipleContents()) { uris: List<Uri> ->
+            onUrisSelected(uris) // 여기에서 콜백을 호출하여 URI 리스트를 업데이트합니다.
+        }
+
+        Button(onClick = { launcher.launch("image/*") }) {
+            Text("Open Gallery")
+        }
+
+        Row {
+            imageUrisState.forEach { uri ->
+                Image(painter = rememberImagePainter(data = uri), contentDescription = null)
+            }
+        }
+    }
+
+
+
 
     @Composable
     private fun InfoForIsbnComponent(bookItemIsbn: BookItemIsbn) = Column {
@@ -89,11 +105,10 @@ object RegisterInfoInputDetail {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun TitleTextField() {
-        var title by remember { mutableStateOf(TextFieldValue("")) }
+    private fun TitleTextField(text: TextFieldValue, onTextChange: (TextFieldValue) -> Unit) {
         TextField(
-            value = title,
-            onValueChange = { newText -> title = newText },
+            value = text,
+            onValueChange = onTextChange,
             singleLine = true,
             placeholder = { Text("제목을 입력하시오") }
         )
@@ -101,12 +116,11 @@ object RegisterInfoInputDetail {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    private fun InfoDetailLine(title: String) = Row {
-        var text by remember { mutableStateOf(TextFieldValue("")) }
-        Text(title)
+    private fun InfoDetailLine(column: String, text: TextFieldValue, onTextChange: (TextFieldValue) -> Unit) = Row {
+        Text(column)
         TextField(
             value = text,
-            onValueChange = { newText -> text = newText }
+            onValueChange = onTextChange
         )
     }
 }
