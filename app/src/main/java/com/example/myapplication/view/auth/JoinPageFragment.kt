@@ -180,7 +180,7 @@ object JoinPageFragment{
 
     private fun initializeApiService(context: Context): ApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8083/")
+            .baseUrl("http://34.64.224.76:9090/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

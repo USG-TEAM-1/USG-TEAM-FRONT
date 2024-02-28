@@ -2,7 +2,6 @@ package com.example.myapplication.view.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,28 +14,28 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
-import com.example.myapplication.data.dummyData
+import com.example.myapplication.api.BookContent
 
 object BookListComponent {
     @Composable
-    fun view() {
-        BookList()
+    fun view(books: SnapshotStateList<BookContent>) {
+        BookList(books)
     }
-    
+
     @Composable
-    private fun BookList() = LazyColumn(
+    private fun BookList(books: List<BookContent>) = LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
-        itemsIndexed(dummyData) { index, book ->
+        itemsIndexed(books) { index, bookContent ->
             Column {
                 Row {
                     BookImage()
@@ -44,12 +43,12 @@ object BookListComponent {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(22.dp),
-                        verticalArrangement = spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(text = book.postTitle)
-                        Text(text = book.title)
-                        Text(text = book.salePrice + " / " + book.originalPrice)
-                        Text(text = book.publisher + ", " + book.author)
+                        Text(text = bookContent.book.bookPostName)
+                        Text(text = bookContent.book.bookName)
+                        Text(text = "${bookContent.book.bookPrice} / ${bookContent.book.bookRealPrice}")
+                        Text(text = "${bookContent.book.publisher}, ${bookContent.book.author}")
                     }
                 }
                 Divider(
