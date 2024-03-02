@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.R
 import com.example.myapplication.api.BookContent
 
+
 object BookListComponent {
     @Composable
     fun view(books: SnapshotStateList<BookContent>) {
