@@ -1,5 +1,9 @@
-package com.example.myapplication.view.register
+package com.example.myapplication.view.modify
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
@@ -9,56 +13,48 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberImagePainter
+import com.example.myapplication.ModifyViewModel
 import com.example.myapplication.api.book.BookApi
-import com.example.myapplication.data.BookUsingIsbn
+import com.example.myapplication.data.BookItem
 
-
-object RegisterInfoInputDetail {
+object ModifyPageFragment {
     val bookApi = BookApi()
 
     @Composable
-    fun view(isbnCode: String, bookItemIsbn: BookUsingIsbn, navController: NavController) {
-        val context = LocalContext.current
+    fun view(modifyViewModel: ModifyViewModel, navController: NavController) {
 
-        var bookComment by remember { mutableStateOf(TextFieldValue("")) }
-        var bookPostName by remember { mutableStateOf(TextFieldValue("")) }
-        var bookPrice by remember { mutableStateOf(TextFieldValue("")) }
+        val book: BookItem? by modifyViewModel.bookItem.observeAsState()
+
+        var bookComment by remember { mutableStateOf(TextFieldValue(book?.bookComment ?: "")) }
+        var bookPostName by remember { mutableStateOf(TextFieldValue(book?.bookPostName ?: "")) }
+        var bookPrice by remember { mutableStateOf(TextFieldValue(book?.bookPrice.toString() ?: "")) }
+
         var imageUrisState by remember { mutableStateOf(listOf<Uri>()) }
 
         Column {
-            InfoForIsbnComponent(bookItemIsbn)
-            Divider()
-            TitleTextField(text = bookPostName, onTextChange = { bookPostName = it })
+            bookPostName?.let { TitleTextField(text = it, onTextChange = { bookPostName = it }) }
             GalleryMultipleImagePicker(imageUrisState = imageUrisState) { uris ->
                 imageUrisState = uris
             }
 
-            InfoDetailLine(column = "판매가", text = bookPrice, onTextChange = { bookPrice = it })
-            InfoDetailLine(column = "상세정보", text = bookComment, onTextChange = { bookComment = it })
+            bookPrice?.let { InfoDetailLine(column = "판매가", text = it, onTextChange = { bookPrice = it }) }
+            bookComment?.let { InfoDetailLine(column = "상세정보", text = it, onTextChange = { bookComment = it }) }
             Button(onClick = {
-                bookApi.registerBook(
-                    bookName = bookItemIsbn.bookName,
+                bookApi.modifyBook(
                     bookComment = bookComment.text,
-                    author = bookItemIsbn.author,
                     bookPostName = bookPostName.text,
                     bookPrice = bookPrice.text.toInt(),
-                    isbn = isbnCode,
-                    bookRealPrice = bookItemIsbn.bookRealPrice.toInt(),
-                    publisher = bookItemIsbn.publisher,
                     imageUris = imageUrisState,
-                    context = context
+                    bookId = modifyViewModel.bookId
                 )
+                navController.navigate("main")
             }) {
                 Text("확인")
             }
@@ -81,17 +77,6 @@ object RegisterInfoInputDetail {
                 Image(painter = rememberImagePainter(data = uri), contentDescription = null)
             }
         }
-    }
-
-
-
-
-    @Composable
-    private fun InfoForIsbnComponent(bookItemIsbn: BookUsingIsbn) = Column {
-        InfoForIsbnLine(title = "책 제목", content = bookItemIsbn.bookName)
-        InfoForIsbnLine(title = "저자", content = bookItemIsbn.author)
-        InfoForIsbnLine(title = "출판사", content = bookItemIsbn.publisher)
-        InfoForIsbnLine(title = "원가", content = bookItemIsbn.bookRealPrice.toString())
     }
 
     @Composable
@@ -125,4 +110,5 @@ object RegisterInfoInputDetail {
             onValueChange = onTextChange
         )
     }
+
 }

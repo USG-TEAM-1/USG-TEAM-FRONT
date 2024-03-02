@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import BookDetailViewModel
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -20,18 +21,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myapplication.data.BookItemIsbn
 import com.example.myapplication.view.auth.LoginPageFragment
 import com.example.myapplication.view.auth.JoinPageFragment
 import com.example.myapplication.view.auth.TokenManager
-import com.example.myapplication.view.main.MainPageFragment
 import com.example.myapplication.view.register.RegisterInfoInputDetail
 import com.example.myapplication.view.register.RegisterInfoInputForIsbn
 import com.example.myapplication.view.register.RegisterInfoInputForManually
 import com.example.myapplication.view.register.SelectInfoInputFragment
 import android.provider.Settings
 import android.Manifest
-
+import com.example.myapplication.data.BookItem
+import com.example.myapplication.data.BookUsingIsbn
+import com.example.myapplication.view.detail.DetailPageFragment
+import com.example.myapplication.view.main.MainPageFragment
+import com.example.myapplication.view.modify.ModifyPageFragment
 
 
 class MainActivity : AppCompatActivity() {
@@ -82,11 +85,15 @@ class MainActivity : AppCompatActivity() {
 
 
 class RegisterViewModel() : ViewModel() {
-    val bookItemIsbn = MutableLiveData<BookItemIsbn>()
+    val bookItemIsbn = MutableLiveData<BookUsingIsbn>()
     var isbnCode: String = ""
 }
 class ChatTalkViewModel() : ViewModel() {
     var nickname: String = ""
+}
+class ModifyViewModel() : ViewModel() {
+    var bookId: Int = 1
+    val bookItem = MutableLiveData<BookItem>()
 }
 
 @Composable
@@ -95,9 +102,12 @@ fun MainContent() {
     val context = LocalContext.current
     TokenManager.initialize(context)
     val token = remember { TokenManager.getToken() }
+//    Log.d("token", token.toString())
 
     val registerViewModel: RegisterViewModel = viewModel()
     val chatTalkViewModel: ChatTalkViewModel = viewModel()
+    val modifyViewModel: ModifyViewModel = viewModel()
+    val detailViewModel: BookDetailViewModel = BookDetailViewModel(1)
 
     Surface(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = if (token != null) "main" else "login") {
@@ -108,7 +118,11 @@ fun MainContent() {
                 JoinPageFragment.view(navController)
             }
             composable("main") {
-                MainPageFragment.view(navController)
+//                MainPageFragment.view(navController)
+                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
+            }
+            composable("detail") {
+                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
             }
             composable("selectInfoInput") {
                 SelectInfoInputFragment.view(navController)
@@ -118,6 +132,9 @@ fun MainContent() {
             }
             composable("registerInfoInputForManually") {
                 RegisterInfoInputForManually.view(navController, registerViewModel)
+            }
+            composable("modifyBookInfo") {
+                ModifyPageFragment.view(modifyViewModel, navController)
             }
             composable("registerInfoInputDetail") {
                 registerViewModel.bookItemIsbn.value?.let { bookItemIsbn ->

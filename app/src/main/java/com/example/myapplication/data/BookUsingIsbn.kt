@@ -38,3 +38,24 @@ data class BookItemIsbn @JvmOverloads constructor(
 ) : Parcelable
 
 
+data class BookUsingIsbn(
+    val bookName: String,
+    val author: String,
+    val publisher: String,
+    val bookRealPrice: String
+)
+
+data class PrePriceResponse(
+    val TOTAL_COUNT: String,
+    val docs: List<Doc>,
+    val PAGE_NO: String
+)
+
+data class Doc(
+    val PUBLISHER: String,
+    val AUTHOR: String,
+    val PRE_PRICE: String,
+    val TITLE: String
+)
+
+
