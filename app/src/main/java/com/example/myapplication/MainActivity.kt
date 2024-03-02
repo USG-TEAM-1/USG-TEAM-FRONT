@@ -30,6 +30,7 @@ import com.example.myapplication.view.register.RegisterInfoInputForManually
 import com.example.myapplication.view.register.SelectInfoInputFragment
 import android.provider.Settings
 import android.Manifest
+import android.util.Log
 import com.example.myapplication.data.BookItem
 import com.example.myapplication.data.BookUsingIsbn
 import com.example.myapplication.view.detail.DetailPageFragment
@@ -102,7 +103,8 @@ fun MainContent() {
     val context = LocalContext.current
     TokenManager.initialize(context)
     val token = remember { TokenManager.getToken() }
-//    Log.d("token", token.toString())
+//    TokenManager.deleteToken()
+    Log.d("token", token.toString())
 
     val registerViewModel: RegisterViewModel = viewModel()
     val chatTalkViewModel: ChatTalkViewModel = viewModel()
@@ -118,8 +120,8 @@ fun MainContent() {
                 JoinPageFragment.view(navController)
             }
             composable("main") {
-//                MainPageFragment.view(navController)
-                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
+                MainPageFragment.view(navController)
+//                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
             }
             composable("detail") {
                 DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
@@ -143,7 +145,7 @@ fun MainContent() {
             }
             composable("personalChatTalk") {
                 chatTalkViewModel.nickname?.let { bookItemIsbn ->
-//                    ChatTalkPage.view(chatTalkViewModel.nickname)
+                    ChatPageFragment.view()
                 }
             }
         }
