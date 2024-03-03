@@ -1,6 +1,4 @@
-import android.content.pm.LauncherActivityInfo
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,18 +32,24 @@ object ChatPageFragment {
     private val receivedMessages = mutableStateListOf<String>() // List of messages received from the server
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:9090/")
+        .baseUrl("http://34.64.152.213:8081")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
     private val chatService = retrofit.create(ChatService::class.java)
 
     @Composable
-    fun view() {
+    fun view(chatRoomId: Int, email: String?) {
+        Log.d("chatRoomId", chatRoomId.toString())
+        if (email != null) {
+            Log.d("email", email)
+        }
         LaunchedEffect(Unit) {
             // 페이지에 처음 진입할 때 소켓 연결
-//            fetchMessages()
-            connectToWebSocket()
+            if (email != null) {
+                fetchMessages(email)
+            }
+            connectToWebSocket(chatRoomId)
             //처음 진입할 때 한 번만 메시지 요청
         }
 
@@ -60,7 +64,9 @@ object ChatPageFragment {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            SendMessage()
+            if (email != null) {
+                SendMessage(email, chatRoomId)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             ReceivedMessages()
         }
@@ -68,7 +74,7 @@ object ChatPageFragment {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SendMessage() {
+    fun SendMessage(email: String, chatRoomId: Int) {
         val context = LocalContext.current
         val (message, setMessage) = remember { mutableStateOf("") }
 
@@ -82,9 +88,9 @@ object ChatPageFragment {
                 onValueChange = setMessage,
                 label = { Text("Enter message") },
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = { sendMessage(context, message) })
+                keyboardActions = KeyboardActions(onSend = { sendMessage(context, message, email, chatRoomId) })
             )
-            Button(onClick = { sendMessage(context, message) }) {
+            Button(onClick = { sendMessage(context, message, email, chatRoomId) }) {
                 Text("Send")
             }
         }
@@ -94,20 +100,20 @@ object ChatPageFragment {
     fun ReceivedMessages() {
         Column {
             receivedMessages.forEach { message ->
-                Text(text = message)
+                Text(text = message, modifier = Modifier.padding(end = 10.dp))
             }
         }
     }
 
-    private fun connectToWebSocket() {
-        val serverUrl = "ws://10.0.2.2:9090/ws"
+    private fun connectToWebSocket(chatRoomId: Int) {
+        val serverUrl = "ws://34.64.152.213:8081/ws"
         stompClient = Stomp.over(Stomp.ConnectionProvider.OKHTTP, serverUrl)
         stompClient?.connect()
 
         stompClient?.lifecycle()?.subscribe { lifecycleEvent ->
             when (lifecycleEvent.type) {
                 ua.naiksoftware.stomp.dto.LifecycleEvent.Type.OPENED -> {
-                    subscribeToChatTopic()
+                    subscribeToChatTopic(chatRoomId)
                 }
                 ua.naiksoftware.stomp.dto.LifecycleEvent.Type.CLOSED -> {
                     // 연결이 닫힐 때 소켓 연결을 해제합니다.
@@ -127,8 +133,8 @@ object ChatPageFragment {
     }
 
 
-    private fun subscribeToChatTopic() {
-        val chatRoomId = 1
+    private fun subscribeToChatTopic(chatRoomId: Int) {
+        val chatRoomId = chatRoomId
         val destination = "/topic/chat/$chatRoomId"
 
         stompClient?.topic(destination)?.subscribe() { topicMessage ->
@@ -163,9 +169,9 @@ object ChatPageFragment {
     }
 
 
-    private fun sendMessage(context: android.content.Context, message: String) {
-        val receiverEmail = "namsoo2@email"
-        val chatRoomId = 1L
+    private fun sendMessage(context: android.content.Context, message: String, email: String, chatRoomId: Int) {
+        val receiverEmail = email
+        val chatRoomId = chatRoomId
 
         val jsonObject = JSONObject().apply {
             put("message", message)
@@ -189,22 +195,22 @@ object ChatPageFragment {
         stompClient?.send(stompMessage)?.subscribe()
     }
 
-//    private fun fetchMessages() {
-//        val receiverEmail = "namsoo2@email"
-//        val token = TokenManager.getToken() ?: ""
-//
-//        GlobalScope.launch(Dispatchers.IO) {
-//            try {
-//                val response = chatService.getMessages(token, receiverEmail)
-//                val messages = response.data
-//                messages.forEach { message ->
-//                    val formattedMessage = "Sender: ${message.senderId} Receiver: ${message.receiverId}- Message: ${message.message} - Timestamp: ${message.timestamp}"
-//                    receivedMessages.add(formattedMessage)
-//                }
-//            } catch (e: Exception) {
-//                Log.e("ChatPageFragment", "Error fetching messages: ${e.message}")
-//            }
-//        }
-//    }
+    private fun fetchMessages(email: String) {
+        val receiverEmail = email
+        val token = TokenManager.getToken() ?: ""
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = chatService.getMessages(token, receiverEmail)
+                val messages = response.data
+                messages.forEach { message ->
+                    val formattedMessage = "Sender: ${message.senderId} Receiver: ${message.receiverId}- Message: ${message.message} - Timestamp: ${message.timestamp}"
+                    receivedMessages.add(formattedMessage)
+                }
+            } catch (e: Exception) {
+                Log.e("ChatPageFragment", "Error fetching messages: ${e.message}")
+            }
+        }
+    }
 }
 

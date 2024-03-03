@@ -1,6 +1,7 @@
 package com.example.myapplication
 
-import BookDetailViewModel
+import ChatPageFragment
+import ChatRoomPageFragment
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -109,8 +110,6 @@ fun MainContent() {
     val registerViewModel: RegisterViewModel = viewModel()
     val chatTalkViewModel: ChatTalkViewModel = viewModel()
     val modifyViewModel: ModifyViewModel = viewModel()
-    val detailViewModel: BookDetailViewModel = BookDetailViewModel(1)
-
     Surface(modifier = Modifier.fillMaxSize()) {
         NavHost(navController = navController, startDestination = if (token != null) "main" else "login") {
             composable("login") {
@@ -123,8 +122,13 @@ fun MainContent() {
                 MainPageFragment.view(navController)
 //                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
             }
-            composable("detail") {
-                DetailPageFragment.view(navController, modifyViewModel, detailViewModel)
+            composable("detail/{bookId}/{email}") { backStackEntry ->
+                val arguments = backStackEntry.arguments
+                val bookId = arguments?.getString("bookId")
+                val email = arguments?.getString("email")
+                if (bookId != null) {
+                    DetailPageFragment.view(navController, modifyViewModel, bookId.toInt(), email)
+                }
             }
             composable("selectInfoInput") {
                 SelectInfoInputFragment.view(navController)
@@ -143,10 +147,16 @@ fun MainContent() {
                     RegisterInfoInputDetail.view(registerViewModel.isbnCode, bookItemIsbn, navController)
                 }
             }
-            composable("personalChatTalk") {
-                chatTalkViewModel.nickname?.let { bookItemIsbn ->
-                    ChatPageFragment.view()
+            composable("personalChatTalk/{chatRoomId}/{email}") { backStackEntry ->
+                val arguments = backStackEntry.arguments
+                val chatRoomId = arguments?.getString("chatRoomId")
+                val email = arguments?.getString("email")
+                if (chatRoomId != null) {
+                    ChatPageFragment.view(chatRoomId.toInt(), email)
                 }
+            }
+            composable("chatList") {
+                ChatRoomPageFragment.view(navController)
             }
         }
     }

@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.myapplication.view.auth.TokenManager
 import com.example.myapplication.view.chat.ChatRoom
 import com.google.gson.Gson
@@ -22,16 +23,16 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-private const val API_BASE_URL = "http://10.0.2.2:9090"
+private const val API_BASE_URL = "http://34.64.152.213:8081"
 
 object ChatRoomPageFragment {
     private var chatRooms by mutableStateOf<List<ChatRoom>>(emptyList())
     @Composable
-    fun view(){
-        ConnectScreen()
+    fun view(navController: NavHostController) {
+        ConnectScreen(navController)
     }
     @Composable
-    fun ConnectScreen() {
+    fun ConnectScreen(navController: NavHostController) {
         val context = LocalContext.current
         val (connected, setConnected) = remember { mutableStateOf(false) }
 
@@ -60,7 +61,7 @@ object ChatRoomPageFragment {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             } else {
-                ChatPageFragment.view()
+//                ChatPageFragment.view(chatRoomId, email)
             }
 
             // 채팅방 목록 출력
@@ -69,10 +70,16 @@ object ChatRoomPageFragment {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 chatRooms.forEach { chatRoom ->
-                    Text(text = "Chat Room ID: ${chatRoom.chatRoomId}, Opponent: ${chatRoom.opponentEmail}, Nickname: ${chatRoom.opponentNickName}")
+                    Button(onClick = { enterPersonalChat(chatRoom.chatRoomId.toInt(), chatRoom.opponentEmail, navController) }) {
+                        Text(text = "Chat Room ID: ${chatRoom.chatRoomId}, Opponent: ${chatRoom.opponentEmail}, Nickname: ${chatRoom.opponentNickName}")
+                    }
                 }
             }
         }
+    }
+
+    private fun enterPersonalChat(chatRoomId: Int, email: String, navController: NavHostController) {
+        navController.navigate("personalChatTalk/${chatRoomId}/${email}")
     }
 
     private fun connectToSTOMP(context: Context, setConnected: (Boolean) -> Unit) {

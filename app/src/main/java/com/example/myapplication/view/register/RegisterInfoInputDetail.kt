@@ -47,18 +47,19 @@ object RegisterInfoInputDetail {
             InfoDetailLine(column = "판매가", text = bookPrice, onTextChange = { bookPrice = it })
             InfoDetailLine(column = "상세정보", text = bookComment, onTextChange = { bookComment = it })
             Button(onClick = {
-                bookApi.registerBook(
-                    bookName = bookItemIsbn.bookName,
-                    bookComment = bookComment.text,
-                    author = bookItemIsbn.author,
-                    bookPostName = bookPostName.text,
-                    bookPrice = bookPrice.text.toInt(),
-                    isbn = isbnCode,
-                    bookRealPrice = bookItemIsbn.bookRealPrice.toInt(),
-                    publisher = bookItemIsbn.publisher,
-                    imageUris = imageUrisState,
-                    context = context
-                )
+//                bookApi.registerBook(
+//                    bookName = bookItemIsbn.bookName,
+//                    bookComment = bookComment.text,
+//                    author = bookItemIsbn.author,
+//                    bookPostName = bookPostName.text,
+//                    bookPrice = bookPrice.text.toInt(),
+//                    isbn = isbnCode,
+//                    bookRealPrice = bookItemIsbn.bookRealPrice.toInt(),
+//                    publisher = bookItemIsbn.publisher,
+//                    imageUris = imageUrisState,
+//                    context = context
+//                )
+                navController.navigate("main")
             }) {
                 Text("확인")
             }

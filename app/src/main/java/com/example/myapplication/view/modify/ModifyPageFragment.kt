@@ -47,13 +47,13 @@ object ModifyPageFragment {
             bookPrice?.let { InfoDetailLine(column = "판매가", text = it, onTextChange = { bookPrice = it }) }
             bookComment?.let { InfoDetailLine(column = "상세정보", text = it, onTextChange = { bookComment = it }) }
             Button(onClick = {
-                bookApi.modifyBook(
-                    bookComment = bookComment.text,
-                    bookPostName = bookPostName.text,
-                    bookPrice = bookPrice.text.toInt(),
-                    imageUris = imageUrisState,
-                    bookId = modifyViewModel.bookId
-                )
+//                bookApi.modifyBook(
+//                    bookComment = bookComment.text,
+//                    bookPostName = bookPostName.text,
+//                    bookPrice = bookPrice.text.toInt(),
+//                    imageUris = imageUrisState,
+//                    bookId = modifyViewModel.bookId
+//                )
                 navController.navigate("main")
             }) {
                 Text("확인")

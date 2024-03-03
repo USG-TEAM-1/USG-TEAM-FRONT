@@ -1,6 +1,5 @@
 package com.example.myapplication.view.detail
 
-import BookDetailViewModel
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,32 +31,46 @@ import com.example.myapplication.view.component.IconButtonComponent.IconButton
 import kotlinx.coroutines.launch
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import com.example.myapplication.ModifyViewModel
 import com.example.myapplication.api.book.BookApi
+import com.example.myapplication.api.book.RetrofitChatObj
+import com.example.myapplication.data.BookDetailResponse
+import com.example.myapplication.view.auth.TokenManager
+import com.example.myapplication.view.chat.ChatRequest
+import com.example.myapplication.view.chat.ChatService
 
 
 object BookDetailComponent {
     val bookApi = BookApi()
+    val chatApi: ChatService by lazy {
+        RetrofitChatObj.retrofitChat.build().create(ChatService::class.java)
+    }
 
     @Composable
-    fun view(bookDetailViewModel: BookDetailViewModel, modifyViewModel: ModifyViewModel, navController: NavController) {
-        val bookItem by bookDetailViewModel.bookDetail.observeAsState()
+    fun view(bookId: Int, email: String?, modifyViewModel: ModifyViewModel, navController: NavController) {
+        val bookDetailResponse: LiveData<BookDetailResponse> = bookApi.getBookDetail(bookId)
+        val bookDetailState: State<BookDetailResponse?> = bookDetailResponse.observeAsState(null)
 
-        val item = bookItem?.data ?: BookItem(
-            bookPostName = "",
-            nickname = "",
-            imageUrls = listOf(),
-            bookName = "",
-            bookPrice = 0,
-            bookRealPrice = 0,
-            author = "",
-            publisher = "",
-            bookComment = ""
-        )
-        BottomSheetMenu(item, modifyViewModel, navController, bookDetailViewModel.bookId)
+        when {
+            bookDetailState.value != null ->  {
+                val item = bookDetailState.value?.data ?: BookItem(
+                    bookPostName = "",
+                    nickname = "",
+                    imageUrls = listOf(),
+                    bookName = "",
+                    bookPrice = 0,
+                    bookRealPrice = 0,
+                    author = "",
+                    publisher = "",
+                    bookComment = ""
+                )
+                BottomSheetMenu(item, modifyViewModel, navController, bookId, email)
+            }
+        }
     }
 
     @Composable
@@ -71,7 +84,8 @@ object BookDetailComponent {
         bookItem: BookItem,
         modifyViewModel: ModifyViewModel,
         navController: NavController,
-        bookId: Int
+        bookId: Int,
+        email: String?
     ) {
         val coroutineScope = rememberCoroutineScope()
         val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
@@ -87,6 +101,7 @@ object BookDetailComponent {
                     }
                     Button(onClick = {
                         bookApi.deleteBook(bookId)
+                        navController.navigate("main")
                     }) {
                         Text("삭제하기")
                     }
@@ -110,7 +125,11 @@ object BookDetailComponent {
                     }
                     Row {
                         bookItem.nickname?.let { text(text = it) }
-                        Button(onClick = { /*TODO*/ }) {
+                        Button(onClick = {
+                            coroutineScope.launch {
+                                openChatRoom(email, navController)
+                            }
+                        }) {
                             Text("챗톡")
                         }
                     }
@@ -140,6 +159,24 @@ object BookDetailComponent {
             }
         )
     }
+
+    private suspend fun openChatRoom(email: String?, navController: NavController) {
+        val token = TokenManager.getToken()
+        Log.d("token", token.toString())
+        Log.d("email", email.toString())
+        if (email != null && token != null) {
+            val emailBody = ChatRequest("sumin2@naver.com")
+            val chatResponse = chatApi.getChatRooms(token, emailBody)
+            if (chatResponse.isSuccessful) {
+                Log.d("BookDetail", "getChatRooms : ${chatResponse.body()}")
+                navController.navigate("personalChatTalk/${chatResponse.body()?.data?.chatRoomId}/${email}")
+            } else {
+                val errorBody = chatResponse.errorBody()?.string() // errorBody를 문자열로 변환
+                Log.d("BookDetail", "getChatRooms : $errorBody")
+            }
+        }
+    }
+
 
     @Composable
     private fun MenuButton(onClick: () -> Unit) = IconButton(

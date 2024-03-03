@@ -1,6 +1,7 @@
 package com.example.myapplication.view.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,29 +18,41 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.api.BookContent
 
 
 object BookListComponent {
     @Composable
-    fun view(books: SnapshotStateList<BookContent>) {
-        BookList(books)
+    fun view(books: SnapshotStateList<BookContent>, navController: NavController) {
+        BookList(books, navController)
     }
 
     @Composable
-    private fun BookList(books: List<BookContent>) = LazyColumn(
+    private fun BookList(books: List<BookContent>, navController: NavController) = LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
     ) {
         itemsIndexed(books) { index, bookContent ->
-            Column {
+            Column(
+                modifier = Modifier
+                    .clickable {
+                        navController.navigate("detail/${bookContent.book.id}/${bookContent.book.email}")
+                    }
+            ) {
                 Row {
-                    BookImage()
+                    val imageUrl = bookContent.image.getOrElse(0) { "" } // 이미지가 없는 경우 빈 문자열을 반환합니다.
+
+                    if (imageUrl.isNotEmpty()) {
+                        BookImage(imageUrl)
+                    }
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -61,14 +74,18 @@ object BookListComponent {
     }
 
     @Composable
-    private fun BookImage() = Image(
-        painter = painterResource(id = R.drawable.ic_main_mypage),
-        contentDescription = "책 이미지",
-        modifier = Modifier
-            .width(112.dp)
-            .height(150.dp)
-            .padding(start = 19.dp)
-    )
+    private fun BookImage(imageUrl: String) {
+        val painter = rememberImagePainter(imageUrl)
+
+        Image(
+            painter = painter,
+            contentDescription = "이미지 설명",
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp),
+            contentScale = ContentScale.Crop
+        )
+    }
 
     @Composable
     private fun ContentText(text: String) = Text(

@@ -1,8 +1,11 @@
 package com.example.myapplication.view.chat
 
 import com.google.gson.annotations.SerializedName
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface ChatService {
@@ -12,9 +15,30 @@ interface ChatService {
         @Query("receiverEmail") receiverEmail: String
     ): MessagesResponse // MessagesResponse에 대한 적절한 모델 클래스가 필요합니다.
 
-    @GET("/api/chat-rooms")
+    @GET("/api/chat-rooms/")
     suspend fun getChatRooms(@Header("Authorization") token: String): List<ChatRoom>
+
+    @POST("/api/chat-rooms")
+    suspend fun getChatRooms(
+        @Header("Authorization") token: String,
+        @Body chatRequest: ChatRequest
+    ): Response<ChatResponse>
+
+
 }
+
+data class ChatRequest(
+    val opponentEmail: String
+)
+
+data class ChatResponse(
+    val data: ChatData,
+    val message: String
+)
+
+data class ChatData(
+    val chatRoomId: Int
+)
 
 data class Message(
     val message: String,
