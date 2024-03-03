@@ -1,5 +1,6 @@
 package com.example.myapplication.view.register
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
@@ -13,11 +14,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavHostController
-import com.example.myapplication.api.book.RetrofitIsbnObj.bookApi
 import androidx.compose.runtime.rememberCoroutineScope
 import com.example.myapplication.BuildConfig
 import com.example.myapplication.RegisterViewModel
-import com.example.myapplication.data.BookItemIsbn
+import com.example.myapplication.api.book.RetrofitIsbnObj.bookIsbnApi
+import com.example.myapplication.data.BookUsingIsbn
 import kotlinx.coroutines.launch
 
 
@@ -54,18 +55,40 @@ object RegisterInfoInputForIsbn {
         }
     }
 
-    private suspend fun getInfoForIsbn(isbnCode: String): BookItemIsbn? {
+    private suspend fun getInfoForIsbn(isbnCode: String): BookUsingIsbn? {
         val key = BuildConfig.API_KEY
 
-        return try {
-            val response = bookApi.getBookIsbn(key, true, "isbn", isbnCode)
-            val bookItems = response.result.bookItems
-            bookItems.firstOrNull()
+        try {
+            val bookItemResponce = bookIsbnApi.getBookPrePriceIsbn(key, 1, "json", 1, isbnCode)
+            Log.d("isbn", bookItemResponce.body().toString())
+
+            if (bookItemResponce.isSuccessful) {
+                val docs = bookItemResponce.body()?.docs
+                if (!docs.isNullOrEmpty()) {
+                    val bookItems = docs[0]
+                    // bookItems에서 필요한 정보를 가져와서 BookUsingIsbn 객체를 생성
+                    val bookUsingIsbn = BookUsingIsbn(
+                        bookName = bookItems.TITLE,
+                        author = bookItems.AUTHOR,
+                        publisher = bookItems.PUBLISHER,
+                        bookRealPrice = bookItems.PRE_PRICE
+                    )
+                    return bookUsingIsbn
+                } else {
+                    Log.d("getInfoForIsbn", "통신 성공, 하지만 docs가 비어 있음")
+                    return null
+                }
+            } else {
+                Log.d("getInfoForIsbn", "통신 실패: ${bookItemResponce.errorBody()?.string()}")
+                return null
+            }
+
         } catch (e: Exception) {
             println("API 요청 중 오류 발생: ${e.message}")
-            null
+            return null
         }
     }
+
 
 
 }

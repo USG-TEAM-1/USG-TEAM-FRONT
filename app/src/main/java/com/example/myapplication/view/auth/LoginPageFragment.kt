@@ -112,7 +112,7 @@ object LoginPageFragment {
 
     private fun initializeApiService(context: Context): ApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://34.64.224.76:9090/")
+            .baseUrl("http://34.64.152.213:9090/")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 

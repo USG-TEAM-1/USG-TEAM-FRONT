@@ -15,25 +15,26 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.navigation.NavController
 import com.example.myapplication.RegisterViewModel
 import com.example.myapplication.data.BookItemIsbn
+import com.example.myapplication.data.BookUsingIsbn
 
 object RegisterInfoInputForManually {
     @Composable
     fun view(navController: NavController, registerViewModel: RegisterViewModel) {
         var bookTitle by remember { mutableStateOf(TextFieldValue("")) }
-        var originalPrice by remember { mutableStateOf(TextFieldValue("")) }
+        var realPrice by remember { mutableStateOf(TextFieldValue("")) }
         var author by remember { mutableStateOf(TextFieldValue("")) }
         var publisher by remember { mutableStateOf(TextFieldValue("")) }
 
         Column {
             Text(text = "책 정보 등록")
             EditText(column = "책 제목", text = bookTitle, onTextChange = { bookTitle = it })
-            EditText(column = "원가", text = originalPrice, onTextChange = { originalPrice = it })
+            EditText(column = "원가", text = realPrice, onTextChange = { realPrice = it })
             EditText(column = "저자", text = author, onTextChange = { author = it })
             EditText(column = "출판사", text = publisher, onTextChange = { publisher = it })
 
             Button(onClick = {
                 // EditText에서 받은 값을 BookItemIsbn에 담습니다.
-                registerViewModel.bookItemIsbn.value = BookItemIsbn(bookTitle.text, author.text, publisher.text)
+                registerViewModel.bookItemIsbn.value = BookUsingIsbn(bookName = bookTitle.text, author=author.text, publisher=publisher.text, bookRealPrice = realPrice.text)
                 navController.navigate("registerInfoInputDetail")
             }) {
                 Text("확인")
